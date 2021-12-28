@@ -14,18 +14,14 @@ public class ServerAi {
             Arrays.fill(row, 0);
             field[i] = row;
         }
-        Utils.arrayToString(field);
     }
 
     public void startNewGame() {
         doTurn(1);
     }
 
-    public String getDataForSending(){
-        return Utils.arrayToString(field);
-    }
 
-    private boolean doTurn(int nextTurn) {
+    public boolean doTurn(int nextTurn) {
 
         for (int i = 0; i < field.length; i++) {
             for (int j = 0; j < field.length; j++) {
@@ -40,5 +36,17 @@ public class ServerAi {
 
     public int[][] getField() {
         return field;
+    }
+
+    public void setField(int[][] field) {
+        this.field = field;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public Random getRandom() {
+        return random;
     }
 }
