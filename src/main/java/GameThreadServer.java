@@ -3,7 +3,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class GameThreadServer extends Thread{
+public class GameThreadServer extends Thread {
     private PrintWriter outputChanel;
     private BufferedReader inputChanel;
     private Socket clientSocket;
@@ -17,40 +17,46 @@ public class GameThreadServer extends Thread{
 
     @Override
     public void run() {
-        try {
-            clientSocket = serverSocket.accept();
+        while (true) {
+            try {
 
-                outputChanel = new PrintWriter(clientSocket.getOutputStream(), true);
-                inputChanel = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                clientSocket = serverSocket.accept();
 
-                String inputLine;
                 ServerAi serverAi = new ServerAi();
-                while ((inputLine = inputChanel.readLine()) != null) {
-                    String[] split = inputLine.split(";");
-                    Command command = Command.valueOf(split[0]);
 
-                    switch (command) {
+                while (true) {
+                    outputChanel = new PrintWriter(clientSocket.getOutputStream(), true);
+                    inputChanel = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                        case NEWGAME:
-                            serverAi.startNewGame();
-                            sendMessageToClient(command, serverAi);
-                            break;
-                        case NEXTTURN:
-                            sendMessageToClient(command, serverAi);
-                            break;
+                    String inputLine;
+                    while ((inputLine = inputChanel.readLine()) != null) {
+                        String[] split = inputLine.split(";");
+                        Command command = Command.valueOf(split[0]);
+
+                        switch (command) {
+
+                            case NEWGAME:
+                                serverAi.startNewGame();
+                                sendMessageToClient(command, serverAi);
+                                break;
+                            case NEXTTURN:
+                                command.setCommand("nextturn");
+                                sendMessageToClient(command, serverAi);
+                                break;
+                        }
+
                     }
-
                 }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
     public void sendMessageToClient(Command command, ServerAi serverAi) throws IOException {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-        objectOutputStream.writeObject(new GameData(command,serverAi.getField(), 3, "do your move"));
-        objectOutputStream.close();
+        objectOutputStream.writeObject(new GameData(command, serverAi.getField(), 3, "do your move"));
+        //objectOutputStream.close();
     }
 }
