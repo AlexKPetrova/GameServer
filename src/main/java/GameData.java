@@ -5,7 +5,7 @@ public class GameData implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    Command command;
+     private Command command;
 
     int[][] field;
 
