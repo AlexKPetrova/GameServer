@@ -19,43 +19,38 @@ public class GameThreadServer extends Thread{
     public void run() {
         try {
             clientSocket = serverSocket.accept();
-            outputChanel = new PrintWriter(clientSocket.getOutputStream(), true);
-            inputChanel = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine;
-            ServerAi serverAi = new ServerAi();
-            while ((inputLine = inputChanel.readLine()) != null){
-                String[] split = inputLine.split(";");
-                Command command = Command.valueOf(split[0]);
 
-                switch (command){
+                outputChanel = new PrintWriter(clientSocket.getOutputStream(), true);
+                inputChanel = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                    case NEWGAME:
-                        serverAi.startNewGame();
+                String inputLine;
+                ServerAi serverAi = new ServerAi();
+                while ((inputLine = inputChanel.readLine()) != null) {
+                    String[] split = inputLine.split(";");
+                    Command command = Command.valueOf(split[0]);
 
-                        //Кусок с сериализацией
+                    switch (command) {
 
-//                        String s = "";
-//                        ObjectOutputStream objectOutputStream = new ObjectOutputStream();
-//                        objectOutputStream.writeObject(new GameData(command.setCommand("nextturn",);));
+                        case NEWGAME:
+                            serverAi.startNewGame();
+                            sendMessageToClient(command, serverAi);
+                            break;
+                        case NEXTTURN:
+                            sendMessageToClient(command, serverAi);
+                            break;
+                    }
 
-
-
-
-
-                        //конец куска с сериализацией
-
-                        sendMessageToClient("NEXTTURN;" + serverAi.getDataForSending() + ";3; do your move");
-                        break;
                 }
 
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    public void sendMessageToClient(String msg){
-        outputChanel.println(msg);
+    public void sendMessageToClient(Command command, ServerAi serverAi) throws IOException {
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        objectOutputStream.writeObject(new GameData(command,serverAi.getField(), 3, "do your move"));
+        objectOutputStream.close();
     }
 }

@@ -37,4 +37,8 @@ public class ServerAi {
         }
         return false;
     }
+
+    public int[][] getField() {
+        return field;
+    }
 }

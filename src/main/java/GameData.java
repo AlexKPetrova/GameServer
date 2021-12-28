@@ -3,6 +3,8 @@ import java.util.Arrays;
 
 public class GameData implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     Command command;
 
     int[][] field;
@@ -54,9 +56,19 @@ public class GameData implements Serializable {
     public String toString() {
         return "GameData{" +
                 "command=" + command +
-                ", field=" + Arrays.toString(field) +
+                ", field=" + viewField(field) +
                 ", number=" + number +
                 ", message='" + message + '\'' +
                 '}';
+    }
+
+    public String viewField(int[][] arr){
+        String s = "";
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < arr.length; j++) {
+                s = s + arr[i][j] + " | ";
+            }
+        }
+        return s;
     }
 }
